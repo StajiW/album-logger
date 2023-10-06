@@ -1,30 +1,36 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { supabase } from './scripts/supabase'
+import Spotify from './scripts/spotify'
+
+async function signIn() {
+	const { data, error } = await supabase.auth.signInWithOAuth({
+		provider: 'spotify',
+		options: {
+			redirectTo: import.meta.env.VITE_SPOTIFY_REDIRECT_URL
+		}
+	})
+
+	if (error) console.error(error)
+	else console.log(data)
+}
+
+async function signOut() {
+	const { error } = await supabase.auth.signOut()
+
+	if (error) console.error(error)
+}
+
+async function trySearch() {
+	console.log(await Spotify.searchAlbums('Miles davis kind of blue'))
+}
+
+trySearch()
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+<button id='signIn' @click='signIn()'>Sign In</button>
+<button id='signOut' @click='signOut()'>Sign Out</button>
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
 </style>
